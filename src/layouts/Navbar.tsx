@@ -6,6 +6,7 @@ import Container from "../components/containers/Container";
 import TextButton from "../components/buttons/TextButton";
 import TextIconButton from "../components/buttons/TextIconButton";
 import FilledButton from "../components/buttons/FilledButton";
+import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 
 import logoImg from "../assets/images/logo.svg";
 
@@ -62,7 +63,7 @@ export default function Navbar() {
 
   return (
     <nav className="z-[99]">
-      <Container className="justify-between p-3 hidden lg:flex">
+      <Container className="justify-between p-3 hidden md:flex">
         <div className="flex items-center gap-8">
           <Link to="/">
             <img src={logoImg} alt="logo" className="h-[60px]" />
@@ -85,14 +86,15 @@ export default function Navbar() {
         </div>
 
         <div className="flex items-center gap-8">
-          <FilledButton className="flex items-center gap-1 connect-wallet">
+          {/* <FilledButton className="flex items-center gap-1 connect-wallet">
             <Icon icon="mdi:wallet-outline" className="text-xl" />
             Connect Wallet
-          </FilledButton>
+          </FilledButton> */}
+          <WalletMultiButton />
         </div>
       </Container>
 
-      <Container className="justify-between items-center p-4 flex lg:hidden">
+      <Container className="justify-between items-center p-4 flex md:hidden">
         <Link to="/">
           <img src={logoImg} alt="logo" className="h-[60px]" />
         </Link>
@@ -134,8 +136,7 @@ export default function Navbar() {
 
           <List>
             <ListItem className="gap-4 text-gray-100" onClick={() => {}}>
-              <Icon icon="mdi:wallet-outline" className="text-xl" />
-              Connect Wallet
+              <WalletMultiButton />
             </ListItem>
           </List>
         </div>

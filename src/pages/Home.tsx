@@ -1,7 +1,24 @@
 import { useState, useEffect, useMemo } from "react";
 import FilledButton from "../components/buttons/FilledButton";
 import logoImg from "../assets/images/avata.png";
+import { IDL } from "../idl/staking_idl";
 
+import * as anchor from "@project-serum/anchor";
+import {
+  Commitment,
+  Connection,
+  PublicKey,
+  Transaction,
+  LAMPORTS_PER_SOL,
+  SystemProgram,
+  ConfirmOptions,
+  SYSVAR_RENT_PUBKEY,
+} from "@solana/web3.js";
+import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
+import { useWallet, useAnchorWallet } from "@solana/wallet-adapter-react";
+
+const CONTRACT_ID = "7GYhhyfMSy7oDg9Ym7u2UsvoKGdZq3UqVXt77LvSGsxL";
+const TOKEN_MINT = "Aq36ngTDYx6YyM8UnuTnDSTkNXjqZ4mo6eXTgVzpCpP2";
 export default function Blank() {
   const stakingOptions = [
     {
@@ -59,6 +76,12 @@ export default function Blank() {
       limit: 30,
     },
   ];
+
+  const wallet = useAnchorWallet();
+  console.log("wallet address -----------", wallet);
+
+  // const program = new anchor.Program(IDL, new PublicKey(CONTRACT_ID), provider);
+  // const tokenMintPubkey = new PublicKey(TOKEN_MINT);
 
   return (
     <section className="h-full flex flex-col pt-[50px] gap-5 sm:pt-0 sm:gap-5 w-full px-10 max-w-[1300px]">
