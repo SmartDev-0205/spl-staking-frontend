@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import FilledButton from "../components/buttons/FilledButton";
 import logoImg from "../assets/images/avata.png";
-import { IDL } from "../idl/staking_idl";
+import { IDL, TStaking } from "../idl/staking_idl";
 
 import * as anchor from "@project-serum/anchor";
 import {
@@ -16,9 +16,18 @@ import {
 } from "@solana/web3.js";
 import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
 import { useWallet, useAnchorWallet } from "@solana/wallet-adapter-react";
+import {
+  CONFIG_SEED,
+  STAKE_SEED,
+  VAULT_SEED,
+  connection,
+} from "../utils/consts";
 
 const CONTRACT_ID = "7GYhhyfMSy7oDg9Ym7u2UsvoKGdZq3UqVXt77LvSGsxL";
 const TOKEN_MINT = "Aq36ngTDYx6YyM8UnuTnDSTkNXjqZ4mo6eXTgVzpCpP2";
+const CONTRACT_KEY = new anchor.web3.PublicKey(CONTRACT_ID);
+const TOKEN_MINT_KEY = new anchor.web3.PublicKey(TOKEN_MINT);
+
 export default function Blank() {
   const stakingOptions = [
     {
@@ -80,8 +89,51 @@ export default function Blank() {
   const wallet = useAnchorWallet();
   console.log("wallet address -----------", wallet);
 
-  // const program = new anchor.Program(IDL, new PublicKey(CONTRACT_ID), provider);
-  // const tokenMintPubkey = new PublicKey(TOKEN_MINT);
+  const getProvider = () => {
+    if (wallet)
+      return new anchor.AnchorProvider(
+        connection,
+        wallet,
+        anchor.AnchorProvider.defaultOptions()
+      );
+  };
+
+  const pda = (
+    seeds: (Buffer | Uint8Array)[],
+    programId: anchor.web3.PublicKey
+  ): anchor.web3.PublicKey => {
+    const [pdaKey] = anchor.web3.PublicKey.findProgramAddressSync(
+      seeds,
+      programId
+    );
+    return pdaKey;
+  };
+
+  const getProgram = () => {
+    if (!wallet) return;
+    const provider = getProvider();
+    const program = new anchor.Program(IDL as TStaking, CONTRACT_ID, provider);
+  };
+
+  const handleStake = async (id: number) => {
+    if (!wallet) return;
+    const program = getProgram();
+    const configPDA = await pda([CONFIG_SEED], CONTRACT_KEY);
+    const token_valutPDA = await pda(
+      [VAULT_SEED, configPDA.toBuffer(), TOKEN_MINT_KEY.toBuffer()],
+      CONTRACT_KEY
+    );
+    const stakeId = new anchor.BN(19960205);
+    const stake = pda(
+      [
+        STAKE_SEED,
+        wallet.publicKey.toBuffer(),
+        stakeId.toArrayLike(Buffer, "le", 8),
+      ],
+      CONTRACT_KEY
+    );
+    // const userTokenVault = getAssociatedTokenAddressSync(pepeTokenMint, provider.wallet.publicKey);
+  };
 
   return (
     <section className="h-full flex flex-col pt-[50px] gap-5 sm:pt-0 sm:gap-5 w-full px-10 max-w-[1300px]">
