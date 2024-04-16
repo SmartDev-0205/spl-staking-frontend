@@ -1,19 +1,13 @@
 import { useState, useEffect, useMemo } from "react";
 import FilledButton from "../components/buttons/FilledButton";
-import logoImg from "../assets/images/avata.png";
 import { IDL, TStaking } from "../idl/staking_idl";
-
+import { toast } from "react-toastify";
 import * as anchor from "@project-serum/anchor";
 import {
-  Commitment,
-  Connection,
-  PublicKey,
-  Transaction,
-  LAMPORTS_PER_SOL,
-  SystemProgram,
-  ConfirmOptions,
-  SYSVAR_RENT_PUBKEY,
-} from "@solana/web3.js";
+  TOKEN_PROGRAM_ID,
+  ASSOCIATED_TOKEN_PROGRAM_ID,
+  getAssociatedTokenAddressSync,
+} from "@solana/spl-token";
 import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
 import { useWallet, useAnchorWallet } from "@solana/wallet-adapter-react";
 import {
@@ -23,13 +17,19 @@ import {
   connection,
 } from "../utils/consts";
 
-const CONTRACT_ID = "7GYhhyfMSy7oDg9Ym7u2UsvoKGdZq3UqVXt77LvSGsxL";
+const CONTRACT_ID = "22XT2JnL4mtWNRBFEUoGjTo5jzcVbU88dzrFcLTs42Vs";
 const TOKEN_MINT = "Aq36ngTDYx6YyM8UnuTnDSTkNXjqZ4mo6eXTgVzpCpP2";
 const CONTRACT_KEY = new anchor.web3.PublicKey(CONTRACT_ID);
 const TOKEN_MINT_KEY = new anchor.web3.PublicKey(TOKEN_MINT);
 
+const systemProgram = anchor.web3.SystemProgram.programId;
+const tokenProgram = TOKEN_PROGRAM_ID;
+const associatedTokenProgram = ASSOCIATED_TOKEN_PROGRAM_ID;
+const rent = anchor.web3.SYSVAR_RENT_PUBKEY;
+const clock = anchor.web3.SYSVAR_CLOCK_PUBKEY;
+
 export default function Blank() {
-  const stakingOptions = [
+  const initStakingOptions = [
     {
       id: 1,
       name: "ETF Enthusiast",
@@ -38,6 +38,9 @@ export default function Blank() {
       totalStaked: 0,
       lock: 1,
       limit: 80,
+      entity: 0,
+      stakeFlag: false,
+      stakeId: 0,
     },
     {
       id: 2,
@@ -47,6 +50,9 @@ export default function Blank() {
       totalStaked: 0,
       lock: 2,
       limit: 70,
+      entity: 0,
+      stakeFlag: false,
+      stakeId: 0,
     },
     {
       id: 3,
@@ -56,6 +62,9 @@ export default function Blank() {
       totalStaked: 0,
       lock: 2,
       limit: 60,
+      entity: 0,
+      stakeFlag: false,
+      stakeId: 0,
     },
     {
       id: 4,
@@ -65,6 +74,9 @@ export default function Blank() {
       totalStaked: 0,
       lock: 6,
       limit: 50,
+      entity: 0,
+      stakeFlag: false,
+      stakeId: 0,
     },
     {
       id: 5,
@@ -74,6 +86,9 @@ export default function Blank() {
       totalStaked: 0,
       lock: 9,
       limit: 40,
+      entity: 0,
+      stakeFlag: false,
+      stakeId: 0,
     },
     {
       id: 6,
@@ -83,8 +98,13 @@ export default function Blank() {
       totalStaked: 0,
       lock: 12,
       limit: 30,
+      entity: 0,
+      stakeFlag: false,
+      stakeId: 0,
     },
   ];
+  const [stakingOptions, setStakingOptions] = useState(initStakingOptions);
+  const [render, rerender] = useState(false);
 
   const wallet = useAnchorWallet();
   console.log("wallet address -----------", wallet);
@@ -109,31 +129,167 @@ export default function Blank() {
     return pdaKey;
   };
 
+  const getDepositStatus = (index: number) => {
+    if (!wallet) return false;
+    if (stakingOptions[index].stakeFlag) return false;
+    return true;
+  };
+
+  const getWithdrawStatus = (index: number) => {
+    if (!wallet) return false;
+    if (stakingOptions[index].stakeFlag) return true;
+    return false;
+  };
+
   const getProgram = () => {
     if (!wallet) return;
     const provider = getProvider();
     const program = new anchor.Program(IDL as TStaking, CONTRACT_ID, provider);
+    return program;
   };
 
   const handleStake = async (id: number) => {
+    if (!wallet) {
+      toast.warning("Please connecct wallet");
+      return;
+    }
+    try {
+      const program = getProgram();
+      const configPDA = await pda([CONFIG_SEED], CONTRACT_KEY);
+      const token_valutPDA = await pda(
+        [VAULT_SEED, configPDA.toBuffer(), TOKEN_MINT_KEY.toBuffer()],
+        CONTRACT_KEY
+      );
+      const timestamp = Date.now(); // Get the current UTC timestamp in milliseconds
+      const stakeId = new anchor.BN(timestamp);
+      const stake = pda(
+        [
+          STAKE_SEED,
+          wallet.publicKey.toBuffer(),
+          stakeId.toArrayLike(Buffer, "le", 8),
+        ],
+        CONTRACT_KEY
+      );
+      const userTokenVault = getAssociatedTokenAddressSync(
+        TOKEN_MINT_KEY,
+        wallet.publicKey
+      );
+
+      const txid = await program?.methods
+        .stake({ stakeId, planIndex: 6 })
+        .accounts({
+          authority: wallet.publicKey,
+          configuration: configPDA,
+          stake,
+          tokenMint: TOKEN_MINT_KEY,
+          tokenVault: token_valutPDA,
+          userTokenVault,
+          tokenProgram,
+          systemProgram,
+          rent,
+          clock,
+        })
+        .rpc({ skipPreflight: true });
+      console.log(txid);
+      rerender(!render);
+      toast.success("Staking success");
+    } catch (error) {
+      toast.error("Staking failed");
+    }
+  };
+
+  const handleUnStake = async (id: number) => {
+    if (!wallet) {
+      toast.warning("Please connecct wallet");
+      return;
+    }
+    try {
+      const program = getProgram();
+      const configPDA = await pda([CONFIG_SEED], CONTRACT_KEY);
+      const token_valutPDA = await pda(
+        [VAULT_SEED, configPDA.toBuffer(), TOKEN_MINT_KEY.toBuffer()],
+        CONTRACT_KEY
+      );
+      const stakeId = new anchor.BN(stakingOptions[id].stakeId);
+      const stake = pda(
+        [
+          STAKE_SEED,
+          wallet.publicKey.toBuffer(),
+          stakeId.toArrayLike(Buffer, "le", 8),
+        ],
+        CONTRACT_KEY
+      );
+      const userTokenVault = getAssociatedTokenAddressSync(
+        TOKEN_MINT_KEY,
+        wallet.publicKey
+      );
+
+      const txid = await program?.methods
+        .unstake({ stakeId, planIndex: 6 })
+        .accounts({
+          authority: wallet.publicKey,
+          configuration: configPDA,
+          stake,
+          tokenMint: TOKEN_MINT_KEY,
+          tokenVault: token_valutPDA,
+          userTokenVault,
+          tokenProgram,
+          systemProgram,
+          rent,
+          clock,
+        })
+        .rpc({ skipPreflight: true });
+      console.log(txid);
+      rerender(!render);
+      toast.success("UnStaking success");
+    } catch (error) {
+      toast.error("UnStaking failed");
+    }
+  };
+
+  const getStake = async () => {
     if (!wallet) return;
     const program = getProgram();
-    const configPDA = await pda([CONFIG_SEED], CONTRACT_KEY);
-    const token_valutPDA = await pda(
-      [VAULT_SEED, configPDA.toBuffer(), TOKEN_MINT_KEY.toBuffer()],
-      CONTRACT_KEY
-    );
-    const stakeId = new anchor.BN(19960205);
-    const stake = pda(
-      [
-        STAKE_SEED,
-        wallet.publicKey.toBuffer(),
-        stakeId.toArrayLike(Buffer, "le", 8),
-      ],
-      CONTRACT_KEY
-    );
-    // const userTokenVault = getAssociatedTokenAddressSync(pepeTokenMint, provider.wallet.publicKey);
+    let result: any = await program?.account.stake.all([
+      {
+        memcmp: {
+          offset: 8 + 1, // Discriminator.
+          bytes: wallet.publicKey.toBase58(),
+        },
+      },
+    ]);
+    let tempOption = [...stakingOptions];
+    tempOption.forEach((option) => {
+      option.stakeFlag = false;
+    });
+    result.forEach((stake: any) => {
+      const planIndex = stake["account"]["planIndex"];
+      if (planIndex) tempOption[planIndex].stakeFlag = true;
+      tempOption[planIndex].stakeId = parseInt(stake["account"]["stakeId"]);
+    });
+    setStakingOptions(tempOption);
+    return result;
   };
+
+  const getParticipates = async () => {
+    if (!wallet) return;
+    const program = getProgram();
+    const result: any = await program?.account.configuration.all();
+    const account = result[0].account;
+    if (account) {
+      const plans: [] = account.plans;
+      let tempOption = [...stakingOptions];
+      for (let index = 0; index < stakingOptions.length; index++) {
+        tempOption[index].entity = plans[index]["parcitipants"];
+      }
+      setStakingOptions(tempOption);
+    }
+  };
+
+  useEffect(() => {
+    getStake();
+    getParticipates();
+  }, [wallet, render]);
 
   return (
     <section className="h-full flex flex-col pt-[50px] gap-5 sm:pt-0 sm:gap-5 w-full px-10 max-w-[1300px]">
@@ -167,19 +323,32 @@ export default function Blank() {
 
             <div className="flex justify-between">
               <span>Entity:</span>
-              <span>0/{stake.limit}</span>
+              <span>
+                {stake.entity}/{stake.limit}
+              </span>
+            </div>
+
+            <div className="flex justify-between">
+              <span>You Staked:</span>
+              <span>{stake.stakeFlag ? stake.stakeAmount : 0} $PEPE</span>
             </div>
 
             <div className="flex justify-center gap-4">
               <FilledButton
-                onClick={() => {}}
+                onClick={() => {
+                  handleStake(index);
+                }}
+                disabled={!getDepositStatus(index)}
                 className="w-full text-base  font-semibold button-color mt-[5px]"
               >
                 Deposit
               </FilledButton>
               <FilledButton
-                onClick={() => {}}
+                onClick={() => {
+                  handleUnStake(index);
+                }}
                 className="w-full text-base  font-semibold button-color mt-[5px]"
+                disabled={!getWithdrawStatus(index)}
               >
                 Withdraw
               </FilledButton>

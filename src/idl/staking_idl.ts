@@ -215,7 +215,7 @@ export type TStaking = {
     ],
     "accounts": [
         {
-            "name": "Configuration",
+            "name": "configuration",
             "type": {
                 "kind": "struct",
                 "fields": [
@@ -256,7 +256,7 @@ export type TStaking = {
             }
         },
         {
-            "name": "Stake",
+            "name": "stake",
             "type": {
                 "kind": "struct",
                 "fields": [
@@ -635,7 +635,7 @@ export const IDL: TStaking = {
     ],
     "accounts": [
         {
-            "name": "Configuration",
+            "name": "configuration",
             "type": {
                 "kind": "struct",
                 "fields": [
@@ -676,7 +676,7 @@ export const IDL: TStaking = {
             }
         },
         {
-            "name": "Stake",
+            "name": "stake",
             "type": {
                 "kind": "struct",
                 "fields": [
