@@ -17,8 +17,8 @@ import {
   connection,
 } from "../utils/consts";
 
-const CONTRACT_ID = "22XT2JnL4mtWNRBFEUoGjTo5jzcVbU88dzrFcLTs42Vs";
-const TOKEN_MINT = "Aq36ngTDYx6YyM8UnuTnDSTkNXjqZ4mo6eXTgVzpCpP2";
+const CONTRACT_ID = "3rDe1g7KVdoohS2SW2e4yU97d3SPUmSWymDXt2g6novH";
+const TOKEN_MINT = "3H7Fm1QHDkXjtSJsUG7pXU81JqhFMd6pUBJh8vknfVAx";
 const CONTRACT_KEY = new anchor.web3.PublicKey(CONTRACT_ID);
 const TOKEN_MINT_KEY = new anchor.web3.PublicKey(TOKEN_MINT);
 
