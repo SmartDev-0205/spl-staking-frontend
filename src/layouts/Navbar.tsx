@@ -8,7 +8,8 @@ import TextIconButton from "../components/buttons/TextIconButton";
 import FilledButton from "../components/buttons/FilledButton";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 
-import logoImg from "../assets/images/logo.svg";
+// import logoImg from "../assets/images/logo.svg";
+import logoImg from "../assets/images/logo.png";
 
 // -----------------------------------------------------------------------------------------
 
@@ -66,8 +67,10 @@ export default function Navbar() {
       <Container className="justify-between p-3 hidden md:flex">
         <div className="flex items-center gap-8">
           <Link to="/">
-            <img src={logoImg} alt="logo" className="h-[60px]" />
+            <img src={logoImg} alt="logo" className="h-[80px]" />
           </Link>
+
+          <span className="text-[35px]">Money Tree</span>
 
           <div className="flex items-center gap-4">
             {NAV_LINKS.map((linkItem) => (
@@ -95,10 +98,10 @@ export default function Navbar() {
       </Container>
 
       <Container className="justify-between items-center p-4 flex md:hidden">
-        <Link to="/">
-          <img src={logoImg} alt="logo" className="h-[60px]" />
+        <Link to="/" className="flex items-center gap-[8px]">
+          <img src={logoImg} alt="logo" className="h-[80px]" />
+          <span className="text-[25px]">Money Tree</span>
         </Link>
-
         <TextIconButton onClick={() => setVisibleDrawer(true)}>
           <Icon icon="ion:menu" className="text-xl" />
         </TextIconButton>
