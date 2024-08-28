@@ -308,12 +308,12 @@ export default function Blank() {
             </div>
             <div className="flex justify-between">
               <span>Stake:</span>
-              <span>{stake.stakeAmount} $PEPE</span>
+              <span>{stake.stakeAmount} $MONEYTREE</span>
             </div>
 
             <div className="flex justify-between">
               <span>You will get:</span>
-              <span>{stake.rewardAmount} $PEPE</span>
+              <span>{stake.rewardAmount} $MONEYTREE</span>
             </div>
 
             <div className="flex justify-between">
@@ -330,7 +330,7 @@ export default function Blank() {
 
             <div className="flex justify-between">
               <span>You Staked:</span>
-              <span>{stake.stakeFlag ? stake.stakeAmount : 0} $PEPE</span>
+              <span>{stake.stakeFlag ? stake.stakeAmount : 0} $MONEYTREE</span>
             </div>
 
             <div className="flex justify-center gap-4">
