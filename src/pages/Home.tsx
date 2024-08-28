@@ -17,8 +17,8 @@ import {
   connection,
 } from "../utils/consts";
 
-const CONTRACT_ID = "3rDe1g7KVdoohS2SW2e4yU97d3SPUmSWymDXt2g6novH";
-const TOKEN_MINT = "3H7Fm1QHDkXjtSJsUG7pXU81JqhFMd6pUBJh8vknfVAx";
+const CONTRACT_ID = "5VZSs9cdv4tNnyCCHSZqYHu7qVdDsQtdH8UPkYiDMBqX";
+const TOKEN_MINT = "TReeEQE3dGYT5SqhZQGpTAwAtFg6wSSn5XATE7TT5yK";
 const CONTRACT_KEY = new anchor.web3.PublicKey(CONTRACT_ID);
 const TOKEN_MINT_KEY = new anchor.web3.PublicKey(TOKEN_MINT);
 
@@ -45,8 +45,8 @@ export default function Blank() {
     {
       id: 2,
       name: "ETF Enthusiast",
-      stakeAmount: "1,108,333",
-      rewardAmount: "539,583",
+      stakeAmount: "1,000,000",
+      rewardAmount: "1,108,333",
       totalStaked: 0,
       lock: 2,
       limit: 70,
@@ -176,7 +176,7 @@ export default function Blank() {
       );
 
       const txid = await program?.methods
-        .stake({ stakeId, planIndex: 6 })
+        .stake({ stakeId, planIndex: id })
         .accounts({
           authority: wallet.publicKey,
           configuration: configPDA,

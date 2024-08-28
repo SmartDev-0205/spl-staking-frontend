@@ -11,7 +11,7 @@ export default function Footer() {
         </div>
 
         <span className="text-gray-200">
-          Copyrights © {new Date().getFullYear()} PEPE
+          Copyrights © {new Date().getFullYear()} MONEY TREE
         </span>
 
         <div className="flex items-center gap-2">
@@ -30,7 +30,7 @@ export default function Footer() {
 
       <Container className="flex lg:hidden flex-col my-0">
         <p className="text-gray-200 text-center">
-          Copyrights © {new Date().getFullYear()} PEPE
+          Copyrights © {new Date().getFullYear()} MONEY TREE
         </p>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">

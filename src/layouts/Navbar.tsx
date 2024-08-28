@@ -89,10 +89,6 @@ export default function Navbar() {
         </div>
 
         <div className="flex items-center gap-8">
-          {/* <FilledButton className="flex items-center gap-1 connect-wallet">
-            <Icon icon="mdi:wallet-outline" className="text-xl" />
-            Connect Wallet
-          </FilledButton> */}
           <WalletMultiButton />
         </div>
       </Container>
