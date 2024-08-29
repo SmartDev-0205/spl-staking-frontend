@@ -104,6 +104,8 @@ export default function Blank() {
     },
   ];
   const [stakingOptions, setStakingOptions] = useState(initStakingOptions);
+  const [referralAddress, setReferral] = useState("");
+
   const [render, rerender] = useState(false);
 
   const wallet = useAnchorWallet();
@@ -289,6 +291,17 @@ export default function Blank() {
   useEffect(() => {
     getStake();
     getParticipates();
+    console.log(
+      "Wallet address================>",
+      wallet?.publicKey.toBase58()
+    );
+    if (wallet) {
+      setReferral(
+        `https://spl-staking-frontend-git-main-prolocaize.vercel.app/?address=${wallet?.publicKey.toBase58()}`
+      );
+    } else {
+      setReferral("");
+    }
   }, [wallet, render]);
 
   return (
@@ -355,6 +368,20 @@ export default function Blank() {
             </div>
           </div>
         ))}
+      </div>
+
+      <div className="relative h-[50px] flex flex-row items-center px-[5px] bg-bgLight rounded-md z-[100]">
+        <input
+          value={referralAddress}
+          className="default-input flex-1 card-gradient text-[#405f9d]"
+          readOnly
+        />
+        <button
+          onClick={() => navigator.clipboard.writeText(referralAddress)}
+          className="ml-2 px-2 py-1 bg-blue-500 text-white rounded-md"
+        >
+          Copy
+        </button>
       </div>
     </section>
   );
