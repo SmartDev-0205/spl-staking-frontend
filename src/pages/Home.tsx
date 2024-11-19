@@ -335,7 +335,7 @@ export default function Blank() {
             </div>
 
             <div className="flex justify-between">
-              <span>Entity:</span>
+              <span>Participants:</span>
               <span>
                 {stake.entity}/{stake.limit}
                 {/* {stake.entity} */}
