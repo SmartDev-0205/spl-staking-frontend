@@ -70,7 +70,7 @@ export default function Navbar() {
             <img src={logoImg} alt="logo" className="h-[80px]" />
           </Link>
 
-          <span className="text-[35px]">Money Tree</span>
+          <span className="text-[35px]">Frogo Coin</span>
 
           <div className="flex items-center gap-4">
             {NAV_LINKS.map((linkItem) => (
@@ -96,7 +96,7 @@ export default function Navbar() {
       <Container className="justify-between items-center p-4 flex md:hidden">
         <Link to="/" className="flex items-center gap-[8px]">
           <img src={logoImg} alt="logo" className="h-[80px]" />
-          <span className="text-[25px]">Money Tree</span>
+          <span className="text-[25px]">Frogo Coin</span>
         </Link>
         <TextIconButton onClick={() => setVisibleDrawer(true)}>
           <Icon icon="ion:menu" className="text-xl" />

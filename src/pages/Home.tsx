@@ -17,8 +17,8 @@ import {
   connection,
 } from "../utils/consts";
 
-const CONTRACT_ID = "5VZSs9cdv4tNnyCCHSZqYHu7qVdDsQtdH8UPkYiDMBqX";
-const TOKEN_MINT = "TReeEQE3dGYT5SqhZQGpTAwAtFg6wSSn5XATE7TT5yK";
+const CONTRACT_ID = "S1KmhhuVTLrtMKKCMCGwh4L5U7BLNzSgEPWYLzVtCjM";
+const TOKEN_MINT = "FpmLun68EFT2cD554zPKL8uFYph9gGULvGYZp4p2Mvzs";
 const CONTRACT_KEY = new anchor.web3.PublicKey(CONTRACT_ID);
 const TOKEN_MINT_KEY = new anchor.web3.PublicKey(TOKEN_MINT);
 
@@ -321,12 +321,12 @@ export default function Blank() {
             </div>
             <div className="flex justify-between">
               <span>Stake:</span>
-              <span>{stake.stakeAmount} $MONEYTREE</span>
+              <span>{stake.stakeAmount} $Frogo</span>
             </div>
 
             <div className="flex justify-between">
               <span>You will get:</span>
-              <span>{stake.rewardAmount} $MONEYTREE</span>
+              <span>{stake.rewardAmount} $Frogo</span>
             </div>
 
             <div className="flex justify-between">
@@ -337,13 +337,14 @@ export default function Blank() {
             <div className="flex justify-between">
               <span>Entity:</span>
               <span>
-                {stake.entity}/{stake.limit}
+                {/* {stake.entity}/{stake.limit} */}
+                {stake.entity}
               </span>
             </div>
 
             <div className="flex justify-between">
               <span>You Staked:</span>
-              <span>{stake.stakeFlag ? stake.stakeAmount : 0} $MONEYTREE</span>
+              <span>{stake.stakeFlag ? stake.stakeAmount : 0} $Frogo</span>
             </div>
 
             <div className="flex justify-center gap-4">
@@ -370,7 +371,7 @@ export default function Blank() {
         ))}
       </div>
 
-      <div className="relative h-[50px] flex flex-row items-center px-[5px] bg-bgLight rounded-md z-[100]">
+      {/* <div className="relative h-[50px] flex flex-row items-center px-[5px] bg-bgLight rounded-md z-[100]">
         <input
           value={referralAddress}
           className="default-input flex-1 card-gradient text-[#405f9d]"
@@ -382,7 +383,7 @@ export default function Blank() {
         >
           Copy
         </button>
-      </div>
+      </div> */}
     </section>
   );
 }
