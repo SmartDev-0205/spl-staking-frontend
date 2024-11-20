@@ -19,7 +19,7 @@ function App() {
   return (
     <BrowserRouter>
       <ConnectionProvider endpoint={endpoint}>
-        <WalletProvider wallets={[phantomWallet]}>
+        <WalletProvider wallets={[phantomWallet]} autoConnect>
           <WalletModalProvider>
             <Suspense fallback={<Loading />}>
               <Routes />

@@ -16,8 +16,8 @@ import {
   VAULT_SEED,
   connection,
 } from "../utils/consts";
-
-const CONTRACT_ID = "S1KmhhuVTLrtMKKCMCGwh4L5U7BLNzSgEPWYLzVtCjM";
+import logoImg from "../assets/images/logo.png";
+const CONTRACT_ID = "4yuh8EyX5NLL7Vv9PQvWfYKoMUqr5GsB4fjaeU4GRdpA";
 const TOKEN_MINT = "FpmLun68EFT2cD554zPKL8uFYph9gGULvGYZp4p2Mvzs";
 const CONTRACT_KEY = new anchor.web3.PublicKey(CONTRACT_ID);
 const TOKEN_MINT_KEY = new anchor.web3.PublicKey(TOKEN_MINT);
@@ -32,82 +32,42 @@ export default function Blank() {
   const initStakingOptions = [
     {
       id: 1,
-      name: "ETF Enthusiast",
-      stakeAmount: "500,000",
-      rewardAmount: "539,583",
-      totalStaked: 0,
-      lock: 1,
-      limit: 80,
-      entity: 0,
+      stakeAmount: 0,
+      apy: 25,
+      parcitipants: 0,
+      period: 30,
       stakeFlag: false,
+      isStaked: false,
       stakeId: 0,
+      stakedAt: 0,
+      depositTempValue: 0,
     },
     {
-      id: 2,
-      name: "ETF Enthusiast",
-      stakeAmount: "1,000,000",
-      rewardAmount: "1,108,333",
-      totalStaked: 0,
-      lock: 2,
-      limit: 70,
-      entity: 0,
+      id: 1,
+      apy: 50,
+      stakeAmount: 0,
+      parcitipants: 0,
+      period: 60,
       stakeFlag: false,
+      isStaked: false,
       stakeId: 0,
+      stakedAt: 0,
+      depositTempValue: 0,
     },
     {
-      id: 3,
-      name: "Bull Market Bae",
-      stakeAmount: "2,000,000",
-      rewardAmount: "2,250,000",
-      totalStaked: 0,
-      lock: 2,
-      limit: 60,
-      entity: 0,
+      id: 1,
+      apy: 75,
+      stakeAmount: 0,
+      parcitipants: 0,
+      period: 90,
       stakeFlag: false,
+      isStaked: false,
       stakeId: 0,
-    },
-    {
-      id: 4,
-      name: "Bull Market Bae",
-      stakeAmount: "3,000,000",
-      rewardAmount: "3,525,000",
-      totalStaked: 0,
-      lock: 6,
-      limit: 50,
-      entity: 0,
-      stakeFlag: false,
-      stakeId: 0,
-    },
-    {
-      id: 5,
-      name: "Index Fund Influencer",
-      stakeAmount: "4,000,000",
-      rewardAmount: "4,750,000",
-      totalStaked: 0,
-      lock: 9,
-      limit: 40,
-      entity: 0,
-      stakeFlag: false,
-      stakeId: 0,
-    },
-    {
-      id: 6,
-      name: "Wall Street Wizard",
-      stakeAmount: "5,000,000",
-      rewardAmount: "6,000,000",
-      totalStaked: 0,
-      lock: 12,
-      limit: 30,
-      entity: 0,
-      stakeFlag: false,
-      stakeId: 0,
+      stakedAt: 0,
+      depositTempValue: 0,
     },
   ];
   const [stakingOptions, setStakingOptions] = useState(initStakingOptions);
-  const [referralAddress, setReferral] = useState("");
-
-  const [render, rerender] = useState(false);
-
   const wallet = useAnchorWallet();
   console.log("wallet address -----------", wallet);
 
@@ -155,6 +115,10 @@ export default function Blank() {
       toast.warning("Please connecct wallet");
       return;
     }
+    if (stakingOptions[id].stakeAmount > 0) {
+      toast.warning("You staked already.");
+      return;
+    }
     try {
       const program = getProgram();
       const configPDA = await pda([CONFIG_SEED], CONTRACT_KEY);
@@ -178,7 +142,11 @@ export default function Blank() {
       );
 
       const txid = await program?.methods
-        .stake({ stakeId, planIndex: id })
+        .stake({
+          stakeId,
+          planIndex: id,
+          amount: new anchor.BN(stakingOptions[id].depositTempValue * 1e9),
+        })
         .accounts({
           authority: wallet.publicKey,
           configuration: configPDA,
@@ -193,8 +161,10 @@ export default function Blank() {
         })
         .rpc({ skipPreflight: true });
       console.log(txid);
-      rerender(!render);
+      // rerender(!render);
       toast.success("Staking success");
+      await getConfig();
+      await getStake();
     } catch (error) {
       toast.error("Staking failed");
     }
@@ -203,6 +173,19 @@ export default function Blank() {
   const handleUnStake = async (id: number) => {
     if (!wallet) {
       toast.warning("Please connecct wallet");
+      return;
+    }
+    const currentTimestamp = Math.floor(Date.now() / 1000); // Current time in seconds
+    if (stakingOptions[id].stakedAt == 0) {
+      toast.warning("You did not stake yet.");
+      return;
+    }
+    if (
+      stakingOptions[id].stakedAt + stakingOptions[id].period * 3600 * 24 >
+        currentTimestamp &&
+      stakingOptions[id].stakedAt > 0
+    ) {
+      toast.warning("Please wait period");
       return;
     }
     try {
@@ -227,7 +210,7 @@ export default function Blank() {
       );
 
       const txid = await program?.methods
-        .unstake({ stakeId, planIndex: 6 })
+        .unstake({ stakeId, planIndex: id })
         .accounts({
           authority: wallet.publicKey,
           configuration: configPDA,
@@ -242,13 +225,24 @@ export default function Blank() {
         })
         .rpc({ skipPreflight: true });
       console.log(txid);
-      rerender(!render);
+      // rerender(!render);
       toast.success("UnStaking success");
+      await getConfig();
+      await getStake();
     } catch (error) {
       toast.error("UnStaking failed");
     }
   };
 
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    index: number
+  ) => {
+    const { value } = e.target;
+    const updatedOptions = [...stakingOptions];
+    updatedOptions[index].depositTempValue = parseFloat(value);
+    setStakingOptions(updatedOptions);
+  };
   const getStake = async () => {
     if (!wallet) return;
     const program = getProgram();
@@ -260,130 +254,187 @@ export default function Blank() {
         },
       },
     ]);
-    let tempOption = [...stakingOptions];
-    tempOption.forEach((option) => {
-      option.stakeFlag = false;
-    });
-    result.forEach((stake: any) => {
-      const planIndex = stake["account"]["planIndex"];
-      if (planIndex) tempOption[planIndex].stakeFlag = true;
-      tempOption[planIndex].stakeId = parseInt(stake["account"]["stakeId"]);
-    });
-    setStakingOptions(tempOption);
-    return result;
+    console.log("result ==================>", result);
+    if (result.length > 0) {
+      let tempOption = [...stakingOptions];
+      result.forEach((stake: any) => {
+        const amount = stake["account"]["amount"];
+        const planIndex = stake["account"]["planIndex"];
+        const stakeId = stake["account"]["stakeId"];
+        const stakedAt = stake["account"]["stakedAt"];
+        if (planIndex) tempOption[planIndex].stakeFlag = true;
+        tempOption[planIndex].stakeId = parseInt(stake["account"]["stakeId"]);
+        tempOption[planIndex].stakeAmount = parseInt(amount);
+        tempOption[planIndex].stakeId = parseInt(stakeId);
+        tempOption[planIndex].stakedAt = parseInt(stakedAt);
+      });
+      setStakingOptions(tempOption);
+      return result;
+    }
   };
 
-  const getParticipates = async () => {
-    if (!wallet) return;
+  const getConfig = async () => {
     const program = getProgram();
     const result: any = await program?.account.configuration.all();
-    const account = result[0].account;
-    if (account) {
-      const plans: [] = account.plans;
-      let tempOption = [...stakingOptions];
-      for (let index = 0; index < stakingOptions.length; index++) {
-        tempOption[index].entity = plans[index]["parcitipants"];
+    if (result) {
+      const account = result[0].account;
+      if (account) {
+        const plans: [] = account.plans;
+        let tempOption = [...stakingOptions];
+        for (let index = 0; index < stakingOptions.length; index++) {
+          tempOption[index].parcitipants = plans[index]["parcitipants"];
+        }
+        setStakingOptions(tempOption);
       }
-      setStakingOptions(tempOption);
     }
+  };
+
+  const updateStakeFlag = async (stakeIndex: number, flag: boolean) => {
+    let tempOption = [...stakingOptions];
+    tempOption[stakeIndex].stakeFlag = flag;
+    setStakingOptions(tempOption);
   };
 
   useEffect(() => {
     getStake();
-    getParticipates();
+    getConfig();
     console.log(
       "Wallet address================>",
       wallet?.publicKey.toBase58()
     );
-    if (wallet) {
-      setReferral(
-        `https://spl-staking-frontend-git-main-prolocaize.vercel.app/?address=${wallet?.publicKey.toBase58()}`
-      );
-    } else {
-      setReferral("");
-    }
-  }, [wallet, render]);
+  }, [wallet]);
 
   return (
     <section className="h-full flex flex-col pt-[50px] gap-5 sm:pt-0 sm:gap-5 w-full px-10 max-w-[1300px]">
-      <div className="w-full">
-        <p className="text-4xl my-1">Staking</p>
-        <p className="text-lg my-1">Earn fees by providing liquidity</p>
-      </div>
+      <p className="text-[15px] sm:text-[20px] px-6 flex justify-center items-center text-center">
+        Investors earn fixed % from profit on their deposited tokens.
+      </p>
+      <p className="text-[15px] sm:text-[20px] px-6 flex justify-center items-center text-center">
+        Disclaimer: you cannot withdraw tokens until lock time ends, so if the
+        price moves down there is possibility to lose.
+      </p>
       <div className="grid grid-cols-1 md:grid-cols-3 h-fit pt-6 pb-4 gap-10">
         {stakingOptions.map((stake, index) => (
-          <div
-            className="card-gradient text-[#405f9d] relative h-fit p-10 flex flex-col gap-[10px] w-[350px] sm:w-[550px] max-w-full rounded-lg border  shadow-sm border-[#251635]"
-            key={index}
-          >
-            <div className="flex justify-center font-bold text-3xl mb-10">
-              {stake.name}
-            </div>
-            <div className="flex justify-between">
-              <span>Stake:</span>
-              <span>{stake.stakeAmount} $Frogo</span>
+          <div className="flex flex-col gap-5" key={`${index}staking`}>
+            <div className="w-[350px] flex items-center justify-center">
+              <div className="flex flex-row gap-[5px] p-[5px]  bg-[#232358] rounded-full">
+                <div
+                  onClick={() => {
+                    updateStakeFlag(index, false);
+                  }}
+                  className={`w-[100px] md:w-[120px] lg:w-[150px] py-[5px] ${
+                    !stake.stakeFlag && "bg-[#5137EE]"
+                  } rounded-full text-center cursor-pointer switch-item`}
+                >
+                  <span className="text-[15px] md:text-[18px] lg:text-[20px] font-semibold">
+                    Stake
+                  </span>
+                </div>
+
+                <div
+                  onClick={() => {
+                    updateStakeFlag(index, true);
+                  }}
+                  className={`w-[100px] md:w-[120px] lg:w-[150px] py-[5px]  ${
+                    stake.stakeFlag && "bg-[#5137EE]"
+                  } rounded-full text-center cursor-pointer switch-item`}
+                >
+                  <span className="text-[15px] md:text-[18px] lg:text-[20px] font-semibold">
+                    Unstake
+                  </span>
+                </div>
+              </div>
             </div>
 
-            <div className="flex justify-between">
-              <span>You will get:</span>
-              <span>{stake.rewardAmount} $Frogo</span>
-            </div>
+            <div
+              className="py-6 px-6 bg-[#081117] flex flex-col gap-[10px] w-[350px] rounded-lg border text-[#f8f8f9] shadow-sm border-[#eee]"
+              key={index}
+            >
+              <div className=" flex items-center justify-between">
+                <img
+                  src={logoImg}
+                  alt={`${stake.id} logo`}
+                  className=" w-[90px] "
+                  loading="lazy"
+                />
 
-            <div className="flex justify-between">
-              <span>Lock day:</span>
-              <span>{stake.lock} Month</span>
-            </div>
+                <div className="flex gap-4 flex-col">
+                  <span className="opacity-100 font-bold text-[25px]">
+                    Frogo
+                  </span>
+                  <span className="opacity-60">Will Be Locked</span>
+                  <div className="text-base  px-4 py-2 font-semibold bg-[#182b48] rounded-md normal-case flex justify-end">
+                    {stake.period} days
+                  </div>
+                </div>
+              </div>
 
-            <div className="flex justify-between">
-              <span>Participants:</span>
-              <span>
-                {stake.entity}/{stake.limit}
-                {/* {stake.entity} */}
-              </span>
-            </div>
+              <div className="flex flex-row justify-between  opacity-60 text-[18px]">
+                <span>Current APY:</span>
+                <span>{stake.apy} %</span>
+              </div>
 
-            <div className="flex justify-between">
-              <span>You Staked:</span>
-              <span>{stake.stakeFlag ? stake.stakeAmount : 0} $Frogo</span>
-            </div>
+              <div className="flex flex-row justify-between  opacity-60 text-[18px]">
+                <span>Earn:</span>
+                <span>Frogo</span>
+              </div>
 
-            <div className="flex justify-center gap-4">
-              <FilledButton
-                onClick={() => {
-                  handleStake(index);
-                }}
-                disabled={!getDepositStatus(index)}
-                className="w-full text-base  font-semibold button-color mt-[5px]"
-              >
-                Deposit
-              </FilledButton>
-              <FilledButton
-                onClick={() => {
-                  handleUnStake(index);
-                }}
-                className="w-full text-base  font-semibold button-color mt-[5px]"
-                disabled={!getWithdrawStatus(index)}
-              >
-                Withdraw
-              </FilledButton>
+              <div className="flex flex-row justify-between opacity-60 text-[18px]">
+                <span>Entity:</span>
+                <span className="font-[700] ">{stake.parcitipants}</span>
+              </div>
+
+              <div className="flex flex-row justify-between  opacity-60 text-[18px]">
+                <span>Frogo Staked</span>
+                <span className="text-[#ff4500]  font-[800]">In Progress</span>
+              </div>
+
+              {!stake.stakeFlag && (
+                <div className="flex flex-row justify-between  opacity-60 text-[18px]">
+                  <input
+                    type="number"
+                    className="bg-[#182b48] text-[#f8f8f9] rounded-md px-2 py-2 w-full"
+                    placeholder="Enter stake amount"
+                    min="0"
+                    step="0.01"
+                    onChange={(e) => handleInputChange(e, index)}
+                    disabled={stake.stakeAmount ? true : false}
+                  />
+                </div>
+              )}
+
+              <div className="flex justify-center gap-4">
+                {!stake.stakeFlag ? (
+                  <FilledButton
+                    onClick={() => {
+                      handleStake(index);
+                    }}
+                    disabled={!getDepositStatus(index)}
+                    className="w-full text-base  font-semibold button-color mt-[5px]"
+                  >
+                    Deposit
+                  </FilledButton>
+                ) : (
+                  <FilledButton
+                    onClick={() => {
+                      handleUnStake(index);
+                    }}
+                    className="w-full text-base  font-semibold button-color mt-[5px]"
+                    disabled={!getWithdrawStatus(index)}
+                  >
+                    Withdraw
+                  </FilledButton>
+                )}
+              </div>
+
+              <div className="flex flex-row justify-between opacity-60 text-[18px]">
+                <span>You Staked:</span>
+                <span>{stake.stakeAmount / 1e9} Frogo</span>
+              </div>
             </div>
           </div>
         ))}
       </div>
-
-      {/* <div className="relative h-[50px] flex flex-row items-center px-[5px] bg-bgLight rounded-md z-[100]">
-        <input
-          value={referralAddress}
-          className="default-input flex-1 card-gradient text-[#405f9d]"
-          readOnly
-        />
-        <button
-          onClick={() => navigator.clipboard.writeText(referralAddress)}
-          className="ml-2 px-2 py-1 bg-blue-500 text-white rounded-md"
-        >
-          Copy
-        </button>
-      </div> */}
     </section>
   );
 }

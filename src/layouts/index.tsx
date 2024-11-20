@@ -24,7 +24,7 @@ export default function Layout() {
         <img src={pinkImg} alt="logo" />
       </div>
       <Navbar />
-      <div className="flex-1 z-20 flex justify-center py-10">
+      <div className="flex-1 z-20 flex justify-center items-center py-10">
         <Outlet />
       </div>
       <Footer />

@@ -63,11 +63,11 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="z-[99]">
-      <Container className="justify-between p-3 hidden md:flex">
+    <nav className="z-[99]  border-b border-gray-900">
+      <Container className="justify-between p-3 py-1 hidden md:flex">
         <div className="flex items-center gap-8">
           <Link to="/">
-            <img src={logoImg} alt="logo" className="h-[80px]" />
+            <img src={logoImg} alt="logo" className="h-[70px]" />
           </Link>
 
           <span className="text-[35px]">Frogo Coin</span>
@@ -88,11 +88,10 @@ export default function Navbar() {
           </div>
         </div>
 
-        <div className="flex items-center gap-8">
-          <WalletMultiButton />
+        <div className="flex items-center">
+          <WalletMultiButton/>
         </div>
       </Container>
-
       <Container className="justify-between items-center p-4 flex md:hidden">
         <Link to="/" className="flex items-center gap-[8px]">
           <img src={logoImg} alt="logo" className="h-[80px]" />

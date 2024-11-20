@@ -211,6 +211,64 @@ export type TStaking = {
                     }
                 }
             ]
+        },
+        {
+            "name": "deposit",
+            "accounts": [
+                {
+                    "name": "authority",
+                    "isMut": true,
+                    "isSigner": true
+                },
+                {
+                    "name": "configuration",
+                    "isMut": true,
+                    "isSigner": false
+                },
+                {
+                    "name": "tokenMint",
+                    "isMut": false,
+                    "isSigner": false
+                },
+                {
+                    "name": "tokenVault",
+                    "isMut": true,
+                    "isSigner": false
+                },
+                {
+                    "name": "userTokenVault",
+                    "isMut": true,
+                    "isSigner": false
+                },
+                {
+                    "name": "tokenProgram",
+                    "isMut": false,
+                    "isSigner": false
+                },
+                {
+                    "name": "systemProgram",
+                    "isMut": false,
+                    "isSigner": false
+                },
+                {
+                    "name": "rent",
+                    "isMut": false,
+                    "isSigner": false
+                },
+                {
+                    "name": "clock",
+                    "isMut": false,
+                    "isSigner": false
+                }
+            ],
+            "args": [
+                {
+                    "name": "ix",
+                    "type": {
+                        "defined": "DepositIx"
+                    }
+                }
+            ]
         }
     ],
     "accounts": [
@@ -281,6 +339,10 @@ export type TStaking = {
                         "type": "u64"
                     },
                     {
+                        "name": "amount",
+                        "type": "u64"
+                    },
+                    {
                         "name": "reserved",
                         "type": {
                             "array": [
@@ -300,20 +362,24 @@ export type TStaking = {
                 "kind": "struct",
                 "fields": [
                     {
-                        "name": "amount",
-                        "type": "u64"
-                    },
-                    {
                         "name": "period",
                         "type": "u64"
                     },
                     {
                         "name": "reward",
                         "type": "u64"
-                    },
+                    }
+                ]
+            }
+        },
+        {
+            "name": "DepositIx",
+            "type": {
+                "kind": "struct",
+                "fields": [
                     {
-                        "name": "limit",
-                        "type": "u8"
+                        "name": "amount",
+                        "type": "u64"
                     }
                 ]
             }
@@ -330,6 +396,10 @@ export type TStaking = {
                     {
                         "name": "planIndex",
                         "type": "u8"
+                    },
+                    {
+                        "name": "amount",
+                        "type": "u64"
                     }
                 ]
             }
@@ -356,20 +426,12 @@ export type TStaking = {
                 "kind": "struct",
                 "fields": [
                     {
-                        "name": "amount",
-                        "type": "u64"
-                    },
-                    {
                         "name": "period",
                         "type": "u64"
                     },
                     {
                         "name": "reward",
                         "type": "u64"
-                    },
-                    {
-                        "name": "limit",
-                        "type": "u8"
                     },
                     {
                         "name": "parcitipants",
@@ -416,7 +478,7 @@ export type TStaking = {
             "msg": "Invalid unstake."
         }
     ]
-}
+};
 
 export const IDL: TStaking = {
     "version": "0.1.0",
@@ -631,6 +693,64 @@ export const IDL: TStaking = {
                     }
                 }
             ]
+        },
+        {
+            "name": "deposit",
+            "accounts": [
+                {
+                    "name": "authority",
+                    "isMut": true,
+                    "isSigner": true
+                },
+                {
+                    "name": "configuration",
+                    "isMut": true,
+                    "isSigner": false
+                },
+                {
+                    "name": "tokenMint",
+                    "isMut": false,
+                    "isSigner": false
+                },
+                {
+                    "name": "tokenVault",
+                    "isMut": true,
+                    "isSigner": false
+                },
+                {
+                    "name": "userTokenVault",
+                    "isMut": true,
+                    "isSigner": false
+                },
+                {
+                    "name": "tokenProgram",
+                    "isMut": false,
+                    "isSigner": false
+                },
+                {
+                    "name": "systemProgram",
+                    "isMut": false,
+                    "isSigner": false
+                },
+                {
+                    "name": "rent",
+                    "isMut": false,
+                    "isSigner": false
+                },
+                {
+                    "name": "clock",
+                    "isMut": false,
+                    "isSigner": false
+                }
+            ],
+            "args": [
+                {
+                    "name": "ix",
+                    "type": {
+                        "defined": "DepositIx"
+                    }
+                }
+            ]
         }
     ],
     "accounts": [
@@ -701,6 +821,10 @@ export const IDL: TStaking = {
                         "type": "u64"
                     },
                     {
+                        "name": "amount",
+                        "type": "u64"
+                    },
+                    {
                         "name": "reserved",
                         "type": {
                             "array": [
@@ -720,20 +844,24 @@ export const IDL: TStaking = {
                 "kind": "struct",
                 "fields": [
                     {
-                        "name": "amount",
-                        "type": "u64"
-                    },
-                    {
                         "name": "period",
                         "type": "u64"
                     },
                     {
                         "name": "reward",
                         "type": "u64"
-                    },
+                    }
+                ]
+            }
+        },
+        {
+            "name": "DepositIx",
+            "type": {
+                "kind": "struct",
+                "fields": [
                     {
-                        "name": "limit",
-                        "type": "u8"
+                        "name": "amount",
+                        "type": "u64"
                     }
                 ]
             }
@@ -750,6 +878,10 @@ export const IDL: TStaking = {
                     {
                         "name": "planIndex",
                         "type": "u8"
+                    },
+                    {
+                        "name": "amount",
+                        "type": "u64"
                     }
                 ]
             }
@@ -776,20 +908,12 @@ export const IDL: TStaking = {
                 "kind": "struct",
                 "fields": [
                     {
-                        "name": "amount",
-                        "type": "u64"
-                    },
-                    {
                         "name": "period",
                         "type": "u64"
                     },
                     {
                         "name": "reward",
                         "type": "u64"
-                    },
-                    {
-                        "name": "limit",
-                        "type": "u8"
                     },
                     {
                         "name": "parcitipants",
@@ -836,4 +960,4 @@ export const IDL: TStaking = {
             "msg": "Invalid unstake."
         }
     ]
-}
+};
