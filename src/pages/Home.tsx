@@ -33,7 +33,19 @@ export default function Blank() {
     {
       id: 1,
       stakeAmount: 0,
-      apy: 25,
+      apy: 2,
+      parcitipants: 0,
+      period: 7,
+      stakeFlag: false,
+      isStaked: false,
+      stakeId: 0,
+      stakedAt: 0,
+      depositTempValue: 0,
+    },
+    {
+      id: 1,
+      apy: 15,
+      stakeAmount: 0,
       parcitipants: 0,
       period: 30,
       stakeFlag: false,
@@ -44,22 +56,10 @@ export default function Blank() {
     },
     {
       id: 1,
-      apy: 50,
+      apy: 40,
       stakeAmount: 0,
       parcitipants: 0,
       period: 60,
-      stakeFlag: false,
-      isStaked: false,
-      stakeId: 0,
-      stakedAt: 0,
-      depositTempValue: 0,
-    },
-    {
-      id: 1,
-      apy: 75,
-      stakeAmount: 0,
-      parcitipants: 0,
-      period: 90,
       stakeFlag: false,
       isStaked: false,
       stakeId: 0,
@@ -317,13 +317,13 @@ export default function Blank() {
         {stakingOptions.map((stake, index) => (
           <div className="flex flex-col gap-5" key={`${index}staking`}>
             <div className="w-[350px] flex items-center justify-center">
-              <div className="flex flex-row gap-[5px] p-[5px]  bg-[#232358] rounded-full">
+              <div className="flex flex-row gap-[5px] p-[5px]  bg-[#259625] rounded-full">
                 <div
                   onClick={() => {
                     updateStakeFlag(index, false);
                   }}
                   className={`w-[100px] md:w-[120px] lg:w-[150px] py-[5px] ${
-                    !stake.stakeFlag && "bg-[#259625]"
+                    !stake.stakeFlag && "bg-[green]"
                   } rounded-full text-center cursor-pointer switch-item`}
                 >
                   <span className="text-[15px] md:text-[18px] lg:text-[20px] font-semibold">
@@ -336,7 +336,7 @@ export default function Blank() {
                     updateStakeFlag(index, true);
                   }}
                   className={`w-[100px] md:w-[120px] lg:w-[150px] py-[5px]  ${
-                    stake.stakeFlag && "bg-[#259625]"
+                    stake.stakeFlag && "bg-[green]"
                   } rounded-full text-center cursor-pointer switch-item`}
                 >
                   <span className="text-[15px] md:text-[18px] lg:text-[20px] font-semibold">

@@ -4,7 +4,7 @@ import TextIconButton from "../components/buttons/TextIconButton";
 
 export default function Footer() {
   return (
-    <footer className="bg-[#070a15] border-t border-gray-900">
+    <footer className="bg-[#113300] border-t border-gray-900">
       <Container className="hidden lg:flex justify-between items-center my-4">
         <div className="flex items-center gap-2">
           {/* <span className="text-gray-600">Audited by:</span> */}
