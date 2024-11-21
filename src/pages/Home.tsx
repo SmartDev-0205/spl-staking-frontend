@@ -323,7 +323,7 @@ export default function Blank() {
                     updateStakeFlag(index, false);
                   }}
                   className={`w-[100px] md:w-[120px] lg:w-[150px] py-[5px] ${
-                    !stake.stakeFlag && "bg-[#5137EE]"
+                    !stake.stakeFlag && "bg-[#259625]"
                   } rounded-full text-center cursor-pointer switch-item`}
                 >
                   <span className="text-[15px] md:text-[18px] lg:text-[20px] font-semibold">
@@ -336,7 +336,7 @@ export default function Blank() {
                     updateStakeFlag(index, true);
                   }}
                   className={`w-[100px] md:w-[120px] lg:w-[150px] py-[5px]  ${
-                    stake.stakeFlag && "bg-[#5137EE]"
+                    stake.stakeFlag && "bg-[#259625]"
                   } rounded-full text-center cursor-pointer switch-item`}
                 >
                   <span className="text-[15px] md:text-[18px] lg:text-[20px] font-semibold">
